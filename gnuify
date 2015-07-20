@@ -1,0 +1,43 @@
+#!/bin/env zsh
+
+# Symlink gnu version of coreutils to override crappy BSD versions
+#
+
+
+gnuify () {
+
+    bin_dirs=($(brew --cellar coreutils)/*)
+
+    BIN_DIR=${bin_dirs[-1]}/bin
+
+    LINK_DIR=~/.gnucoreutils
+    
+    if [[ $1 == -u ]]; then
+
+	path=(${path:#"$LINK_DIR"})
+
+    else
+
+	if [[ ! -d $LINK_DIR ]]; then
+	    mkdir $LINK_DIR
+	fi
+	
+	
+	for cmd in $BIN_DIR/*(:t); do
+
+	    newname=${cmd#g}
+
+	    if [[ ! -a "$LINK_DIR/$newname" ]]; then
+		ln -s "$BIN_DIR/$cmd"  "$LINK_DIR/$newname"
+	    fi
+
+	done
+	
+	path=($LINK_DIR ${path:#"$LINK_DIR"})
+
+    fi
+    
+}
+	
+gnuify
+
